@@ -4,6 +4,7 @@ import App from './App';
 import FirebaseContext from './context/firebase';
 import { firebase, FieldValue } from './lib/firebase';
 import reportWebVitals from './reportWebVitals';
+import './styles/app.css';
 
 ReactDOM.render(
   <React.StrictMode>
