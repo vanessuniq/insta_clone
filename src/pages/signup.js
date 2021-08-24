@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { DASHBOARD, LOGIN } from "../constants/routes";
 import FirebaseContext from "../context/firebase";
+import { doesUsernameExist } from "../services/firebase";
 
 function SignUp() {
   const history = useHistory();
@@ -14,7 +15,7 @@ function SignUp() {
     fullName: ""
   });
   const [error, setError] = useState("");
-  const isInvalid = signUpData.emailAddress === "" || signUpData.password === "";
+  const isInvalid = signUpData.emailAddress === "" || signUpData.password === "" || signUpData.username === "";
 
   const handleInputChange = (event) => {
     setSignUpData({
@@ -25,12 +26,41 @@ function SignUp() {
   const handleSignUp = async (event) => {
     event.preventDefault();
 
-    try {
-      await firebase.auth().signInWithEmailAndPassword(signUpData.emailAddress, signUpData.password);
-      history.push(DASHBOARD);
-    } catch (error) {
-      setError(error.message);
-    }
+    const usernameExists = await doesUsernameExist(signUpData.username)
+    console.log(usernameExists);
+    if (usernameExists){
+     setError(`The username ${signUpData.username} is already taken, please try another one.`)
+    } else {
+      try {
+        // Firebase authentication (emailAddress, password & displayName)
+        const createdUserResult = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(signUpData.emailAddress, signUpData.password);
+
+        await createdUserResult.user.updateProfile({
+          displayName: signUpData.username
+        });
+
+        // Firebase user collection (create a document)
+        await firebase.firestore().collection("users").add({
+          userId: createdUserResult.user.uid,
+          username: signUpData.username.toLowerCase(),
+          fullName: signUpData.fullName,
+          emailAddress: signUpData.emailAddress.toLowerCase(),
+          following: [],
+          followers: [],
+          dateCreated: Date.now()
+        });
+
+        history.push(DASHBOARD);
+      } catch (error) {
+        setSignUpData({
+          ...signUpData,
+          password: ""
+        })
+        setError(error.message);
+      }
+    };
   };
 
   useEffect(() => {
