@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { DASHBOARD, LOGIN } from "../constants/routes";
+import { DASHBOARD, LOGIN, SIGN_UP } from "../constants/routes";
 import FirebaseContext from "../context/firebase";
 import UserContext from "../context/user";
 
@@ -65,6 +65,9 @@ function Header() {
                   <Link to={`/p/${authUser.displayName}`}>
                     <img src={`/images/avatars/${authUser.displayName}.jpg`} 
                       alt={`${authUser.displayName} profile`}
+                      onError={(error) => {
+                        error.target.src="/images/avatars/default.png"
+                      }}
                       className="rounded-full h-8 w-8 flex"
                     />
                   </Link>
@@ -72,6 +75,21 @@ function Header() {
               </>
             ) : (
               <>
+                <Link to={LOGIN} aria-label="Login">
+                  <button type="button"
+                    className="bg-blue-medium bg-opacity-75 text-white rounded w-20 h-8 font-bold text-sm"
+                  >
+                    Log In
+                  </button>
+                </Link>
+
+                <Link to={SIGN_UP} aria-label="Sign Up">
+                  <button type="button"
+                    className="text-blue-medium opacity-75 text-sm font-bold rounded w-20 h-8"
+                  >
+                    Sign Up
+                  </button>
+                </Link>
               </>
             )}
           </div>
