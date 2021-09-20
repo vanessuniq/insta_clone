@@ -9,5 +9,15 @@ async function doesUsernameExist(username) {
 
   return result.docs.length > 0;
 }
-
-export { doesUsernameExist };
+async function getUserByUserId(userId){
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('userId', '==', userId)
+    .get()
+    .then(res => res.docs[0]);
+  
+  const user = {...result.data(), docId: result.id }
+  return user;
+};
+export { doesUsernameExist, getUserByUserId };
