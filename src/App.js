@@ -4,10 +4,10 @@ import { DASHBOARD, LOGIN, NOT_FOUND, SIGN_UP } from "./constants/routes";
 import UserContext from "./context/user";
 import useAuthListener from "./hooks/useAuthListener";
 
-const Login = lazy(() => import ("./pages/login"));
-const SignUp = lazy(() => import ("./pages/signup"));
-const NotFound = lazy(() => import ("./pages/notFound"));
-const Dashboard = lazy(() => import ("./pages/dashboard"));
+const Login = lazy(() => import ("./pages/Login"));
+const SignUp = lazy(() => import ("./pages/Signup"));
+const NotFound = lazy(() => import ("./pages/NotFound"));
+const Dashboard = lazy(() => import ("./pages/Dashboard"));
 
 function App() {
   const { authUser } = useAuthListener();
