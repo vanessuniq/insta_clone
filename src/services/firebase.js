@@ -8,7 +8,8 @@ async function doesUsernameExist(username) {
     .get();
 
   return result.docs.length > 0;
-}
+};
+
 async function getUserByUserId(userId){
   const result = await firebase
     .firestore()
@@ -20,4 +21,18 @@ async function getUserByUserId(userId){
   const user = {...result.data(), docId: result.id }
   return user;
 };
-export { doesUsernameExist, getUserByUserId };
+
+async function getSuggestedProfiles(userId, following){
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('userId', '!=', userId)
+    .limit(10)
+    .get()
+    .then(res => res.docs.map(user => ({...user.data(), docId: user.id })))
+    .then(profiles => profiles.filter(profile => !following.includes(profile.userId)));
+  
+  return result;
+};
+
+export { doesUsernameExist, getUserByUserId, getSuggestedProfiles };
