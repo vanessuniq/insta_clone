@@ -2,13 +2,14 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { getSuggestedProfiles } from "../../services/firebase";
+import SuggestedProfile from "./SuggestedProfile";
 
 function Suggestions({ userId, following }) {
   const [profiles, setProfiles] = useState(null);
   useEffect(() => {
     async function suggestedProfiles() {
-      const result = await getSuggestedProfiles(userId, following);
-      console.log({result});
+      const response = await getSuggestedProfiles(userId, following);
+      setProfiles(response)
     }
     suggestedProfiles();
   }, [userId, following])
@@ -20,15 +21,26 @@ function Suggestions({ userId, following }) {
   return (
     <div className="rounded flex flex-col">
       <div className="flex items-center align-items justify-between mb-2 text-sm">
-        I am the suggestions: { userId }
+        <p className="font-bold text-gray-base">Suggestions for you</p>
+      </div>
+      <div className="mt-4 grid gap-5">
+        {profiles.map(profile => (
+          <SuggestedProfile
+            key={profile.docId}
+            userDocId={profile.docId}
+            username={profile.username}
+            profileId={profile.userId}
+            currentUserId={userId}
+          />
+        ))}
       </div>
     </div>
   )
 };
 
-export default Suggestions;
-
 Suggestions.propTypes = {
   userId: PropTypes.string.isRequired,
   following: PropTypes.array.isRequired
 };
+
+export default Suggestions;
