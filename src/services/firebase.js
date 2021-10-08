@@ -55,10 +55,23 @@ async function updateSuggestedUserFollowers(profileDocId, currentUserId, isFollo
   });
 };
 
+async function getFollowedUsersPosts(userId, following){
+ const result = firebase
+  .firestore()
+  .collection("photos")
+  .where("userId", "!=", userId)
+  .get()
+  .then(res => res.docs.map(post => ({...post.data(), docId: post.id})))
+  .then(posts => posts.filter(post => following.includes(post.userId)));
+
+  return result;
+};
+
 export {
    doesUsernameExist, 
    getUserByUserId, 
    getSuggestedProfiles, 
    updateCurrentUserFollowing, 
    updateSuggestedUserFollowers,
+   getFollowedUsersPosts
   };
