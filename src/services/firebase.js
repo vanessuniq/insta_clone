@@ -1,4 +1,4 @@
-import { firebase } from '../lib/firebase';
+import { firebase, FieldValue } from '../lib/firebase';
 
 async function doesUsernameExist(username) {
   const result = await firebase
@@ -35,4 +35,52 @@ async function getSuggestedProfiles(userId, following){
   return result;
 };
 
-export { doesUsernameExist, getUserByUserId, getSuggestedProfiles };
+async function addUserToCurrentUserFollowing(currentUserDocId, profileId){
+  await firebase
+  .firestore()
+  .collection("users")
+  .doc(currentUserDocId)
+  .update({
+    following: FieldValue.arrayUnion(profileId)
+  });
+};
+
+async function addUserToSuggestedUserFollowers(profileDocId, currentUserId){
+  await firebase
+  .firestore()
+  .collection("users")
+  .doc(profileDocId)
+  .update({
+    followers: FieldValue.arrayUnion(currentUserId)
+  });
+};
+
+async function removeUserFromCurrentUserFollowing(currentUserDocId, profileId){
+  await firebase
+  .firestore()
+  .collection("users")
+  .doc(currentUserDocId)
+  .update({
+    following: FieldValue.arrayRemove(profileId)
+  });
+};
+
+async function removeUserFromSuggestedUserFollowers(profileDocId, currentUserId){
+  await firebase
+  .firestore()
+  .collection("users")
+  .doc(profileDocId)
+  .update({
+    followers: FieldValue.arrayRemove(currentUserId)
+  });
+};
+
+export {
+   doesUsernameExist, 
+   getUserByUserId, 
+   getSuggestedProfiles, 
+   addUserToCurrentUserFollowing, 
+   addUserToSuggestedUserFollowers,
+   removeUserFromCurrentUserFollowing,
+   removeUserFromSuggestedUserFollowers
+  };

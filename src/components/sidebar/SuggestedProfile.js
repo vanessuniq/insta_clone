@@ -1,52 +1,27 @@
 import PropTypes from 'prop-types';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import FirebaseContext from '../../context/firebase';
+import { addUserToCurrentUserFollowing, addUserToSuggestedUserFollowers, removeUserFromCurrentUserFollowing, removeUserFromSuggestedUserFollowers } from '../../services/firebase';
 
 function SuggestedProfile({ profileDocId, username, profileId, currentUserId, currentUserDocId }) {
-  const {firebase, FieldValue } = useContext(FirebaseContext);
   const [isFollowing, setIsFollowing] = useState(false)
 
   async function handleFollowUser(event){
     if (event.target.innerText === "Follow"){
       // Update the following array of the active user
-      await firebase
-      .firestore()
-      .collection("users")
-      .doc(currentUserDocId)
-      .update({
-        following: FieldValue.arrayUnion(profileId)
-      });
+      await addUserToCurrentUserFollowing(currentUserDocId, profileId);
 
       // Update the followers array of the suggested user who has been followed
-      await firebase
-        .firestore()
-        .collection("users")
-        .doc(profileDocId)
-        .update({
-          followers: FieldValue.arrayUnion(currentUserId)
-        });
+      await addUserToSuggestedUserFollowers(profileDocId, currentUserId);
       
       setIsFollowing(true);
     } else {
       // Unfollow logic
       // Update the following array of the active user
-      await firebase
-      .firestore()
-      .collection("users")
-      .doc(currentUserDocId)
-      .update({
-        following: FieldValue.arrayRemove(profileId)
-      });
+      await removeUserFromCurrentUserFollowing(currentUserDocId, profileId);
 
       // Update the followers array of the suggested user who has been followed
-      await firebase
-        .firestore()
-        .collection("users")
-        .doc(profileDocId)
-        .update({
-          followers: FieldValue.arrayRemove(currentUserId)
-        });
+      await removeUserFromSuggestedUserFollowers(profileDocId, currentUserId);
       
       setIsFollowing(false)
     };
