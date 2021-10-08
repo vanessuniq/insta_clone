@@ -35,43 +35,23 @@ async function getSuggestedProfiles(userId, following){
   return result;
 };
 
-async function addUserToCurrentUserFollowing(currentUserDocId, profileId){
+async function updateCurrentUserFollowing(currentUserDocId, profileId, isFollowing){
   await firebase
   .firestore()
   .collection("users")
   .doc(currentUserDocId)
   .update({
-    following: FieldValue.arrayUnion(profileId)
+    following: isFollowing ? FieldValue.arrayRemove(profileId) : FieldValue.arrayUnion(profileId)
   });
 };
 
-async function addUserToSuggestedUserFollowers(profileDocId, currentUserId){
+async function updateSuggestedUserFollowers(profileDocId, currentUserId, isFollowed){
   await firebase
   .firestore()
   .collection("users")
   .doc(profileDocId)
   .update({
-    followers: FieldValue.arrayUnion(currentUserId)
-  });
-};
-
-async function removeUserFromCurrentUserFollowing(currentUserDocId, profileId){
-  await firebase
-  .firestore()
-  .collection("users")
-  .doc(currentUserDocId)
-  .update({
-    following: FieldValue.arrayRemove(profileId)
-  });
-};
-
-async function removeUserFromSuggestedUserFollowers(profileDocId, currentUserId){
-  await firebase
-  .firestore()
-  .collection("users")
-  .doc(profileDocId)
-  .update({
-    followers: FieldValue.arrayRemove(currentUserId)
+    followers: isFollowed ? FieldValue.arrayRemove(currentUserId) : FieldValue.arrayUnion(currentUserId)
   });
 };
 
@@ -79,8 +59,6 @@ export {
    doesUsernameExist, 
    getUserByUserId, 
    getSuggestedProfiles, 
-   addUserToCurrentUserFollowing, 
-   addUserToSuggestedUserFollowers,
-   removeUserFromCurrentUserFollowing,
-   removeUserFromSuggestedUserFollowers
+   updateCurrentUserFollowing, 
+   updateSuggestedUserFollowers,
   };

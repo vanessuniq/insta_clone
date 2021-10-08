@@ -1,31 +1,19 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { addUserToCurrentUserFollowing, addUserToSuggestedUserFollowers, removeUserFromCurrentUserFollowing, removeUserFromSuggestedUserFollowers } from '../../services/firebase';
+import { updateCurrentUserFollowing, updateSuggestedUserFollowers } from '../../services/firebase';
 
 function SuggestedProfile({ profileDocId, username, profileId, currentUserId, currentUserDocId }) {
   const [isFollowing, setIsFollowing] = useState(false)
 
-  async function handleFollowUser(event){
-    if (event.target.innerText === "Follow"){
-      // Update the following array of the active user
-      await addUserToCurrentUserFollowing(currentUserDocId, profileId);
+  async function handleFollowUser(){
+   // Update the following array of the active user
+   await updateCurrentUserFollowing(currentUserDocId, profileId, isFollowing);
 
-      // Update the followers array of the suggested user who has been followed
-      await addUserToSuggestedUserFollowers(profileDocId, currentUserId);
-      
-      setIsFollowing(true);
-    } else {
-      // Unfollow logic
-      // Update the following array of the active user
-      await removeUserFromCurrentUserFollowing(currentUserDocId, profileId);
+   // Update the followers array of the suggested user who has been followed
+   await updateSuggestedUserFollowers(profileDocId, currentUserId, isFollowing);
 
-      // Update the followers array of the suggested user who has been followed
-      await removeUserFromSuggestedUserFollowers(profileDocId, currentUserId);
-      
-      setIsFollowing(false)
-    };
-
+   setIsFollowing(!isFollowing);
   };
   return (
     <div className="flex flex-row items-center align-items justify-between">
