@@ -56,14 +56,14 @@ async function updateSuggestedUserFollowers(profileDocId, currentUserId, isFollo
 };
 
 async function getFollowedUsersPosts(following){
- const result = firebase
+ const result = await firebase
   .firestore()
   .collection("photos")
   .where("userId", "in", following)
   .get()
   .then(res => res.docs.map(post => ({...post.data(), docId: post.id})));
 
-  return result;
+  return result.sort((a, b) => a.dateCreated - b.dateCreated);
 };
 
 export {
