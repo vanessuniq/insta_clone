@@ -55,15 +55,19 @@ async function updateSuggestedUserFollowers(profileDocId, currentUserId, isFollo
   });
 };
 
-async function getFollowedUsersPosts(following){
+async function getFollowedUsersPosts(following, userId){
  const result = await firebase
   .firestore()
   .collection("photos")
   .where("userId", "in", following)
   .get()
-  .then(res => res.docs.map(post => ({...post.data(), docId: post.id})));
+  .then(res => res.docs.map(post => ({...post.data(), docId: post.id})))
+  .then(posts => posts.map( post => ({...post, 
+    currentUserLiked: post.likes.includes(userId),
+    likes: post.likes.map(async likeUserId => await getUserByUserId(likeUserId))
+  })));
 
-  return result.sort((a, b) => a.dateCreated - b.dateCreated);
+  return result.sort((a, b) => b.dateCreated - a.dateCreated);
 };
 
 export {
