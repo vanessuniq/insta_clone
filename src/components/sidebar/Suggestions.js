@@ -17,6 +17,14 @@ function Suggestions({ userId, following, userDocId }) {
     return (
       <Skeleton count={5} height={150} className="mt-5"/>
     )
+  } else if (profiles?.length === 0) {
+    return (
+      <div className="rounded flex flex-col">
+        <div className="flex items-center align-items justify-between mb-2 text-sm">
+          <p className="font-bold text-gray-base">No Suggestion Available</p>
+        </div>
+      </div>
+    )
   }
   return (
     <div className="rounded flex flex-col">
