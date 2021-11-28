@@ -4,14 +4,16 @@ import useUser from "./useUser";
 
 function usePosts(){
   const { activeUser: { following, userId } } = useUser();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
   useEffect(() => {
     async function getTimelinePosts(){
       const followedUsersPosts = await getFollowedUsersPosts(following, userId);
       setPosts(followedUsersPosts);
     };
-    if (following && following.length > 0) {
+    if (following?.length > 0) {
       getTimelinePosts()
+    } else if (following?.length === 0) {
+      setPosts([])
     }
   }, [following, userId]);
   
